@@ -13,14 +13,14 @@
       font-family: 'Rajdhani', sans-serif;
       user-select: none;
       -webkit-user-select: none;
-      background-color: #0c0804;
+      background-color: #070402;
       color: #e5d3b3;
       overflow: hidden;
     }
     
     .font-dune {
       font-family: 'Cinzel', serif;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.18em;
     }
 
     /* Custom Scrollbar */
@@ -29,7 +29,7 @@
       height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: #1a120b;
+      background: #120b06;
     }
     ::-webkit-scrollbar-thumb {
       background: #c2883a;
@@ -38,26 +38,26 @@
 
     /* Dune Glowing UI Accents */
     .spice-glow {
-      text-shadow: 0 0 10px rgba(234, 138, 38, 0.8), 0 0 20px rgba(234, 138, 38, 0.4);
+      text-shadow: 0 0 12px rgba(234, 138, 38, 0.9), 0 0 24px rgba(234, 138, 38, 0.5);
     }
-    .atreides-border { border-color: #2b7a78; }
-    .harkonnen-border { border-color: #b82601; }
-    .fremen-border { border-color: #3b7a36; }
+    .mystic-glow {
+      text-shadow: 0 0 10px rgba(58, 175, 169, 0.8), 0 0 20px rgba(58, 175, 169, 0.4);
+    }
 
     .btn-dune {
-      background: linear-gradient(135deg, #2a1a0e 0%, #4a2f18 100%);
+      background: linear-gradient(135deg, #1c1108 0%, #3a2310 100%);
       border: 1px solid #c2883a;
       transition: all 0.2s ease;
     }
     .btn-dune:hover:not(:disabled) {
-      background: linear-gradient(135deg, #4a2f18 0%, #704621 100%);
-      box-shadow: 0 0 12px rgba(194, 136, 58, 0.5);
+      background: linear-gradient(135deg, #3a2310 0%, #5d3817 100%);
+      box-shadow: 0 0 14px rgba(194, 136, 58, 0.6);
       border-color: #f7b731;
     }
     .btn-dune:disabled {
-      opacity: 0.4;
+      opacity: 0.35;
       cursor: not-allowed;
-      border-color: #555;
+      border-color: #444;
     }
 
     #gameCanvas {
@@ -66,52 +66,66 @@
 
     /* HUD overlay styling */
     .hud-panel {
-      background: rgba(18, 12, 7, 0.88);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(194, 136, 58, 0.3);
+      background: rgba(12, 7, 3, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(194, 136, 58, 0.35);
+    }
+
+    .screen-shake {
+      animation: shake 0.3s ease-in-out;
+    }
+
+    @keyframes shake {
+      0% { transform: translate(0, 0); }
+      20% { transform: translate(-4px, 4px); }
+      40% { transform: translate(4px, -4px); }
+      60% { transform: translate(-3px, -2px); }
+      80% { transform: translate(3px, 2px); }
+      100% { transform: translate(0, 0); }
     }
   </style>
 </head>
-<body class="h-screen w-screen flex flex-col justify-between select-none relative">
+<body id="gameBody" class="h-screen w-screen flex flex-col justify-between select-none relative">
 
   <!-- AUDIO & HELP CONTROL BAR (Top Right Always Accessible) -->
   <div class="absolute top-3 right-3 z-50 flex items-center gap-2">
-    <button id="howToPlayTopBtn" class="bg-black/60 hover:bg-black/80 text-amber-400 border border-amber-600/50 rounded p-2 text-xs flex items-center gap-1 transition">
+    <button id="howToPlayTopBtn" class="bg-black/70 hover:bg-black/90 text-amber-400 border border-amber-600/50 rounded p-2 text-xs flex items-center gap-1.5 transition shadow-lg">
       <i class="fas fa-circle-info text-base"></i>
-      <span>How to Play</span>
+      <span class="font-dune text-[11px]">Field Manual</span>
     </button>
-    <button id="audioToggleBtn" class="bg-black/60 hover:bg-black/80 text-amber-500 border border-amber-600/50 rounded p-2 text-xs flex items-center gap-1 transition">
+    <button id="audioToggleBtn" class="bg-black/70 hover:bg-black/90 text-amber-500 border border-amber-600/50 rounded p-2 text-xs flex items-center gap-1.5 transition shadow-lg">
       <i id="audioIcon" class="fas fa-volume-mute text-base"></i>
-      <span id="audioLabel">Music: OFF</span>
+      <span id="audioLabel" class="font-dune text-[11px]">Music: OFF</span>
     </button>
   </div>
 
   <!-- MAIN MENU SCREEN -->
-  <div id="mainMenu" class="absolute inset-0 z-40 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-950/40 via-stone-950 to-black flex flex-col items-center justify-center p-6">
+  <div id="mainMenu" class="absolute inset-0 z-40 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-950/50 via-stone-950 to-black flex flex-col items-center justify-center p-6">
     <div class="max-w-xl w-full text-center space-y-6">
       <div class="space-y-2">
+        <p class="text-xs text-amber-500/80 uppercase tracking-[0.3em] font-semibold">The Prophecy of Arrakis</p>
         <h1 class="text-5xl md:text-7xl font-extrabold font-dune text-amber-500 tracking-widest spice-glow">D U N E</h1>
         <p class="text-sm md:text-lg text-amber-200/80 uppercase tracking-widest font-semibold">Spice War Tactics</p>
       </div>
 
       <!-- Faction Selection -->
-      <div class="bg-black/60 border border-amber-900/60 p-4 rounded-lg space-y-3">
-        <h3 class="text-amber-400 font-dune text-sm tracking-wider uppercase">Choose Your House / Faction</h3>
+      <div class="bg-black/70 border border-amber-900/60 p-4 rounded-lg space-y-3 shadow-xl">
+        <h3 class="text-amber-400 font-dune text-xs tracking-wider uppercase">Choose Your Great House / Faction</h3>
         <div class="grid grid-cols-3 gap-3" id="factionSelector">
           <button data-faction="atreides" class="faction-btn p-3 rounded border-2 border-teal-600/80 bg-teal-950/40 hover:bg-teal-900/60 text-teal-200 transition text-center flex flex-col items-center gap-1 active">
             <i class="fas fa-shield-halved text-2xl text-teal-400"></i>
             <span class="font-bold font-dune text-xs">ATREIDES</span>
-            <span class="text-[10px] text-teal-300/70">Balanced Units & Strong Defense</span>
+            <span class="text-[10px] text-teal-300/70">Noble Defense & Shield Boost</span>
           </button>
           <button data-faction="harkonnen" class="faction-btn p-3 rounded border border-red-900/40 bg-red-950/20 hover:bg-red-900/40 text-red-200 transition text-center flex flex-col items-center gap-1 opacity-70">
             <i class="fas fa-skull text-2xl text-red-500"></i>
             <span class="font-bold font-dune text-xs">HARKONNEN</span>
-            <span class="text-[10px] text-red-300/70">Cheaper Offense & Aggressive</span>
+            <span class="text-[10px] text-red-300/70">Brutal Offense & Heavy Armor</span>
           </button>
           <button data-faction="fremen" class="faction-btn p-3 rounded border border-emerald-900/40 bg-emerald-950/20 hover:bg-emerald-900/40 text-emerald-200 transition text-center flex flex-col items-center gap-1 opacity-70">
             <i class="fas fa-eye text-2xl text-emerald-400"></i>
             <span class="font-bold font-dune text-xs">FREMEN</span>
-            <span class="text-[10px] text-emerald-300/70">Fast Speed & Sandworm Immunity</span>
+            <span class="text-[10px] text-emerald-300/70">Desert Stealth & Worm Rider</span>
           </button>
         </div>
       </div>
@@ -119,55 +133,55 @@
       <!-- Game Mode Selection -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- AI Mode Box -->
-        <div class="bg-black/60 border border-amber-900/60 p-4 rounded-lg space-y-3 flex flex-col justify-between">
+        <div class="bg-black/70 border border-amber-900/60 p-4 rounded-lg space-y-3 flex flex-col justify-between shadow-xl">
           <div>
-            <h3 class="text-amber-400 font-dune text-sm tracking-wider uppercase"><i class="fas fa-robot mr-2"></i>Single Player vs AI</h3>
-            <p class="text-xs text-amber-200/60 mt-1">Conquer levels against computer AI.</p>
+            <h3 class="text-amber-400 font-dune text-xs tracking-wider uppercase"><i class="fas fa-robot mr-2"></i>Campaign vs AI</h3>
+            <p class="text-xs text-amber-200/60 mt-1">Fight computer warlords across Arrakis.</p>
           </div>
           <div class="space-y-2">
-            <label class="block text-xs text-left text-amber-400">Campaign Mission:</label>
+            <label class="block text-xs text-left text-amber-400 font-dune">Select Mission:</label>
             <select id="levelSelect" class="w-full bg-stone-900 border border-amber-700/60 text-amber-200 text-xs p-2 rounded">
-              <option value="1">Mission 1: The Landing at Arrakeen (Easy)</option>
-              <option value="2">Mission 2: Deep Desert Skirmish (Medium)</option>
-              <option value="3">Mission 3: Siege of Arrakis (Hard)</option>
+              <option value="1">Mission 1: The Dunes of Arrakeen (Easy)</option>
+              <option value="2">Mission 2: Deep Sands Skirmish (Medium)</option>
+              <option value="3">Mission 3: Siege of the Spice Basin (Hard)</option>
             </select>
-            <button id="startAiGameBtn" class="w-full py-2.5 btn-dune font-dune font-bold text-amber-300 rounded text-sm uppercase">
-              Start Campaign
+            <button id="startAiGameBtn" class="w-full py-2.5 btn-dune font-dune font-bold text-amber-300 rounded text-xs uppercase tracking-wider">
+              Begin Campaign
             </button>
           </div>
         </div>
 
         <!-- Local Pass & Play Mode Box -->
-        <div class="bg-black/60 border border-amber-900/60 p-4 rounded-lg space-y-3 flex flex-col justify-between">
+        <div class="bg-black/70 border border-amber-900/60 p-4 rounded-lg space-y-3 flex flex-col justify-between shadow-xl">
           <div>
-            <h3 class="text-amber-400 font-dune text-sm tracking-wider uppercase"><i class="fas fa-users mr-2"></i>Pass & Play (1 Device)</h3>
-            <p class="text-xs text-amber-200/60 mt-1">Turn-based local tactical battles with a friend on a single screen.</p>
+            <h3 class="text-amber-400 font-dune text-xs tracking-wider uppercase"><i class="fas fa-users mr-2"></i>Pass & Play</h3>
+            <p class="text-xs text-amber-200/60 mt-1">2-Player tactical battle on a single device.</p>
           </div>
-          <button id="startPvpGameBtn" class="w-full py-2.5 btn-dune font-dune font-bold text-amber-300 rounded text-sm uppercase">
-            Start Pass & Play
+          <button id="startPvpGameBtn" class="w-full py-2.5 btn-dune font-dune font-bold text-amber-300 rounded text-xs uppercase tracking-wider">
+            Start 2-Player Match
           </button>
         </div>
       </div>
 
       <div class="flex justify-center">
         <button id="openInstructionsBtn" class="px-4 py-2 bg-amber-950/80 border border-amber-600/60 text-amber-300 rounded hover:bg-amber-900/90 text-xs font-dune tracking-wider transition flex items-center gap-2">
-          <i class="fas fa-book-open"></i> Read Full Strategy Guide & Instructions
+          <i class="fas fa-book-open"></i> Read Mystical Field Guide & Instructions
         </button>
       </div>
 
-      <div class="text-[11px] text-amber-600/70 italic">
-        "He who controls the Spice controls the Universe."
+      <div class="text-[11px] text-amber-600/80 italic font-dune">
+        "Bless the Maker and His water. Bless the coming and going of Him."
       </div>
     </div>
   </div>
 
   <!-- INSTRUCTIONS / HOW TO PLAY MODAL -->
-  <div id="instructionsModal" class="hidden absolute inset-0 z-50 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+  <div id="instructionsModal" class="hidden absolute inset-0 z-50 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-4">
     <div class="max-w-2xl w-full max-h-[85vh] bg-stone-950 border-2 border-amber-600/80 rounded-lg p-6 flex flex-col justify-between shadow-2xl overflow-hidden">
       
       <div class="flex items-center justify-between border-b border-amber-900/60 pb-3 mb-4">
         <h2 class="text-2xl font-extrabold font-dune text-amber-400 flex items-center gap-2">
-          <i class="fas fa-compass text-amber-500"></i> Field Manual & Game Rules
+          <i class="fas fa-compass text-amber-500"></i> Field Manual & Tactical Rules
         </h2>
         <button id="closeInstructionsBtn" class="text-stone-400 hover:text-amber-400 text-xl font-bold px-2">
           &times;
@@ -178,54 +192,54 @@
       <div class="overflow-y-auto space-y-4 pr-2 text-xs md:text-sm text-stone-300 leading-relaxed">
         
         <!-- Objective -->
-        <div class="bg-black/40 border border-amber-900/40 p-3 rounded">
-          <h3 class="font-dune text-amber-400 font-bold text-sm mb-1 uppercase"><i class="fas fa-crosshairs mr-1"></i> Main Objective</h3>
-          <p>Harvest Spice, build up your military forces, and destroy the enemy's main Base (Citadel/HQ) before they crush yours.</p>
+        <div class="bg-black/50 border border-amber-900/40 p-3 rounded">
+          <h3 class="font-dune text-amber-400 font-bold text-sm mb-1 uppercase"><i class="fas fa-crosshairs mr-1"></i> Objective</h3>
+          <p>Harvest Spice, assemble an army of infantry, heavy armor, and aircraft, and obliterate the enemy Citadel to rule Arrakis!</p>
         </div>
 
         <!-- Controls -->
-        <div class="bg-black/40 border border-amber-900/40 p-3 rounded space-y-2">
-          <h3 class="font-dune text-amber-400 font-bold text-sm uppercase"><i class="fas fa-mouse mr-1"></i> Controls & Orders</h3>
+        <div class="bg-black/50 border border-amber-900/40 p-3 rounded space-y-2">
+          <h3 class="font-dune text-amber-400 font-bold text-sm uppercase"><i class="fas fa-mouse mr-1"></i> Commands & Controls</h3>
           <ul class="list-disc list-inside space-y-1 text-stone-300">
-            <li><strong class="text-amber-200">Select Unit:</strong> Click or tap on any friendly unit.</li>
-            <li><strong class="text-amber-200">Move:</strong> With a unit selected, click on an empty grid square.</li>
-            <li><strong class="text-amber-200">Attack:</strong> Select an offensive unit, then click on an enemy unit or structure.</li>
-            <li><strong class="text-amber-200">Deploy Units:</strong> Use the bottom command panel to buy Harvesters, Infantry, Tanks, or Turrets using your gathered Spice.</li>
+            <li><strong class="text-amber-200">Select Unit:</strong> Click/Tap any of your active units or structures.</li>
+            <li><strong class="text-amber-200">Move Order:</strong> Select a unit, then click any empty desert location.</li>
+            <li><strong class="text-amber-200">Attack Order:</strong> Select an offensive unit, then click an enemy unit or citadel.</li>
+            <li><strong class="text-amber-200">Deploy Forces:</strong> Use Spice in the bottom control dock to spawn forces.</li>
           </ul>
         </div>
 
-        <!-- Spice & Economy -->
-        <div class="bg-black/40 border border-amber-900/40 p-3 rounded space-y-2">
-          <h3 class="font-dune text-amber-400 font-bold text-sm uppercase"><i class="fas fa-gem text-amber-500 mr-1"></i> Harvesting Spice</h3>
-          <p>Spice fields appear as glowing orange deposits in the desert. Send your <strong class="text-amber-200">Harvesters</strong> onto spice fields to automatically mine them. Once filled, your harvester will transport the spice back to your base to convert it into funds.</p>
-        </div>
-
-        <!-- Sandworm Hazard -->
-        <div class="bg-black/40 border border-amber-900/40 p-3 rounded space-y-2">
-          <h3 class="font-dune text-red-400 font-bold text-sm uppercase"><i class="fas fa-worm text-red-500 mr-1"></i> Sandworms (Shai-Hulud)</h3>
-          <p>Rhythmic vibrations on open sand attract giant Sandworms! When <strong class="text-red-400">"WORM SIGN"</strong> warnings flash:</p>
+        <!-- Sandworms -->
+        <div class="bg-black/50 border border-amber-900/40 p-3 rounded space-y-2">
+          <h3 class="font-dune text-red-400 font-bold text-sm uppercase"><i class="fas fa-worm text-red-500 mr-1"></i> Shai-Hulud (Sandworms)</h3>
+          <p>Movement on open sand creates ground thumping that attracts Sandworms! When <strong class="text-red-400">WORMSIGN DETECTED</strong> flares:</p>
           <ul class="list-disc list-inside space-y-1">
-            <li>Move units quickly onto dark rocky outcroppings to stay safe.</li>
-            <li>Units remaining on open sands risk being devoured whole!</li>
-            <li><em class="text-emerald-400">Fremen units possess desert stealth and are immune to sandworms.</em></li>
+            <li>Retreat ground units to rocky plateaus to stay safe.</li>
+            <li><em class="text-amber-300">Ornithopters fly above the sand and are completely safe.</em></li>
+            <li><em class="text-emerald-400">Fremen units ride desert sands and are immune to sandworms.</em></li>
           </ul>
         </div>
 
-        <!-- Units Quick Reference -->
-        <div class="bg-black/40 border border-amber-900/40 p-3 rounded">
-          <h3 class="font-dune text-amber-400 font-bold text-sm mb-2 uppercase"><i class="fas fa-shield-cat mr-1"></i> Units & Defense</h3>
+        <!-- Roster Breakdown -->
+        <div class="bg-black/50 border border-amber-900/40 p-3 rounded">
+          <h3 class="font-dune text-amber-400 font-bold text-sm mb-2 uppercase"><i class="fas fa-cubes mr-1"></i> Combat Roster</h3>
           <div class="grid grid-cols-2 gap-2 text-xs">
-            <div class="p-2 bg-stone-900/80 rounded border border-amber-900/30">
-              <strong class="text-amber-300">Harvester (150 Spice):</strong> Unarmed economic vehicle. Automatically mines spice.
+            <div class="p-2 bg-stone-900/90 rounded border border-amber-900/30">
+              <strong class="text-amber-300">Harvester (150 Spice):</strong> Heavy rig that mines spice fields automatically.
             </div>
-            <div class="p-2 bg-stone-900/80 rounded border border-amber-900/30">
-              <strong class="text-blue-300">Infantry (75 Spice):</strong> Fast light assault troops with balanced range.
+            <div class="p-2 bg-stone-900/90 rounded border border-amber-900/30">
+              <strong class="text-blue-300">Light Infantry (75 Spice):</strong> Agile diamond-formation rifle squad.
             </div>
-            <div class="p-2 bg-stone-900/80 rounded border border-amber-900/30">
-              <strong class="text-red-300">Siege Tank (250 Spice):</strong> Heavy armor and long-range cannon firepower.
+            <div class="p-2 bg-stone-900/90 rounded border border-amber-900/30">
+              <strong class="text-teal-300">Elite Guard (130 Spice):</strong> Fedaykin/Sardaukar unit with high HP and blade shields.
             </div>
-            <div class="p-2 bg-stone-900/80 rounded border border-amber-900/30">
-              <strong class="text-emerald-300">Gun Turret (200 Spice):</strong> Stationary defensive structure with high firepower.
+            <div class="p-2 bg-stone-900/90 rounded border border-amber-900/30">
+              <strong class="text-red-300">Siege Tank (250 Spice):</strong> Heavy polygon tread tank with armor piercing cannon.
+            </div>
+            <div class="p-2 bg-stone-900/90 rounded border border-amber-900/30">
+              <strong class="text-purple-300">Rocket Artillery (300 Spice):</strong> Extreme long-range bombardment battery.
+            </div>
+            <div class="p-2 bg-stone-900/90 rounded border border-amber-900/30">
+              <strong class="text-yellow-300">Ornithopter (200 Spice):</strong> Flapping-wing aircraft that ignores sand terrain.
             </div>
           </div>
         </div>
@@ -234,7 +248,7 @@
 
       <div class="mt-4 pt-3 border-t border-amber-900/60">
         <button id="closeInstructionsBottomBtn" class="w-full py-2.5 btn-dune font-dune font-bold text-amber-300 rounded text-sm uppercase tracking-wider">
-          Got It, Let's Play!
+          Return to Game
         </button>
       </div>
 
@@ -244,26 +258,26 @@
   <!-- GAME HUD TOP BANNER -->
   <div id="gameHudTop" class="hidden hud-panel w-full px-4 py-2 border-b flex flex-wrap items-center justify-between z-30 text-xs md:text-sm">
     <div class="flex items-center gap-4">
-      <button id="menuReturnBtn" class="px-2.5 py-1 bg-red-950/80 border border-red-700/60 text-red-300 hover:bg-red-900/90 rounded text-xs flex items-center gap-1 transition">
+      <button id="menuReturnBtn" class="px-3 py-1.5 bg-red-950/80 border border-red-700/60 text-red-300 hover:bg-red-900/90 rounded text-xs flex items-center gap-1.5 transition font-dune">
         <i class="fas fa-sign-out-alt"></i> Exit
       </button>
 
       <div class="flex items-center gap-2 border-l border-amber-900/50 pl-4">
-        <i class="fas fa-gem text-amber-500 text-lg"></i>
-        <span class="font-bold text-amber-400">SPICE:</span>
+        <i class="fas fa-gem text-amber-500 text-lg spice-glow"></i>
+        <span class="font-bold text-amber-400 font-dune">SPICE:</span>
         <span id="spiceCount" class="font-mono text-lg font-extrabold text-amber-200">500</span>
       </div>
       <div class="flex items-center gap-2 border-l border-amber-900/50 pl-4">
         <i class="fas fa-users text-stone-400"></i>
-        <span class="font-bold text-stone-300">UNITS:</span>
-        <span id="popCount" class="font-mono text-stone-200">0 / 20</span>
+        <span class="font-bold text-stone-300 font-dune">UNITS:</span>
+        <span id="popCount" class="font-mono text-stone-200">0 / 25</span>
       </div>
     </div>
 
     <!-- Active Turn / Objective Info -->
     <div class="flex items-center gap-3">
-      <div id="turnIndicator" class="px-3 py-1 bg-amber-950/80 border border-amber-600/50 text-amber-300 font-dune font-bold rounded">
-        PLAYER TURN
+      <div id="turnIndicator" class="px-3 py-1 bg-amber-950/90 border border-amber-600/60 text-amber-300 font-dune font-bold rounded tracking-wider">
+        ACTIVE COMMAND
       </div>
     </div>
   </div>
@@ -273,57 +287,81 @@
     <canvas id="gameCanvas" class="w-full h-full block"></canvas>
     
     <!-- Floating Worm Warning Overlay -->
-    <div id="wormWarning" class="hidden pointer-events-none absolute inset-0 bg-red-900/20 flex items-center justify-center animate-pulse">
-      <div class="bg-black/90 border-2 border-red-600 p-4 rounded text-center shadow-2xl">
-        <i class="fas fa-worm text-4xl text-red-500 mb-2"></i>
-        <h2 class="text-xl font-extrabold font-dune text-red-500 tracking-wider">SHAI-HULUD APPROACHING!</h2>
-        <p class="text-xs text-amber-200 mt-1">Wormsign detected on open sands. Move off sand immediately!</p>
+    <div id="wormWarning" class="hidden pointer-events-none absolute inset-0 bg-red-950/30 flex items-center justify-center animate-pulse">
+      <div class="bg-black/90 border-2 border-red-600/90 p-5 rounded-lg text-center shadow-2xl backdrop-blur">
+        <i class="fas fa-worm text-5xl text-red-500 mb-2 animate-bounce"></i>
+        <h2 class="text-2xl font-extrabold font-dune text-red-500 tracking-widest">WORMSIGN DETECTED!</h2>
+        <p class="text-xs text-amber-200 mt-1">Shai-Hulud approaches the open desert! Move units to rocky plateaus!</p>
       </div>
     </div>
   </div>
 
   <!-- GAME HUD BOTTOM COMMAND CENTER -->
-  <div id="gameHudBottom" class="hidden hud-panel w-full p-3 border-t flex flex-wrap md:flex-nowrap gap-3 items-center justify-between z-30">
+  <div id="gameHudBottom" class="hidden hud-panel w-full p-2.5 border-t flex flex-wrap md:flex-nowrap gap-2 items-center justify-between z-30">
     
     <!-- Building & Unit Production Panel -->
     <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 w-full md:w-auto">
-      <span class="text-xs font-dune text-amber-500 font-bold uppercase tracking-wider mr-1">DEPLOY:</span>
+      <span class="text-xs font-dune text-amber-500 font-bold uppercase tracking-wider mr-1">RECRUIT:</span>
       
-      <button id="buildHarvesterBtn" class="btn-dune p-2 rounded flex items-center gap-2 text-amber-200 min-w-[120px] relative">
-        <i class="fas fa-truck-monster text-amber-400 text-lg"></i>
+      <button id="buildHarvesterBtn" class="btn-dune p-2 rounded flex items-center gap-2 text-amber-200 min-w-[115px]">
+        <i class="fas fa-truck-monster text-amber-400 text-base"></i>
         <div class="text-left leading-tight">
           <div class="font-bold text-xs">Harvester</div>
           <div class="text-[10px] text-amber-400/80"><i class="fas fa-gem text-[8px]"></i> 150</div>
         </div>
       </button>
 
-      <button id="buildInfantryBtn" class="btn-dune p-2 rounded flex items-center gap-2 text-amber-200 min-w-[120px]">
-        <i class="fas fa-user-shield text-blue-400 text-lg"></i>
+      <button id="buildInfantryBtn" class="btn-dune p-2 rounded flex items-center gap-2 text-amber-200 min-w-[110px]">
+        <i class="fas fa-user-shield text-blue-400 text-base"></i>
         <div class="text-left leading-tight">
           <div class="font-bold text-xs">Infantry</div>
           <div class="text-[10px] text-amber-400/80"><i class="fas fa-gem text-[8px]"></i> 75</div>
         </div>
       </button>
 
-      <button id="buildTankBtn" class="btn-dune p-2 rounded flex items-center gap-2 text-amber-200 min-w-[120px]">
-        <i class="fas fa-shuttle-space text-red-400 text-lg"></i>
+      <button id="buildEliteBtn" class="btn-dune p-2 rounded flex items-center gap-2 text-amber-200 min-w-[115px]">
+        <i class="fas fa-khanda text-teal-400 text-base"></i>
+        <div class="text-left leading-tight">
+          <div class="font-bold text-xs">Elite Guard</div>
+          <div class="text-[10px] text-amber-400/80"><i class="fas fa-gem text-[8px]"></i> 130</div>
+        </div>
+      </button>
+
+      <button id="buildTankBtn" class="btn-dune p-2 rounded flex items-center gap-2 text-amber-200 min-w-[115px]">
+        <i class="fas fa-shuttle-space text-red-400 text-base"></i>
         <div class="text-left leading-tight">
           <div class="font-bold text-xs">Siege Tank</div>
           <div class="text-[10px] text-amber-400/80"><i class="fas fa-gem text-[8px]"></i> 250</div>
         </div>
       </button>
 
-      <button id="buildTurretBtn" class="btn-dune p-2 rounded flex items-center gap-2 text-amber-200 min-w-[120px]">
-        <i class="fas fa-tower-observation text-emerald-400 text-lg"></i>
+      <button id="buildArtilleryBtn" class="btn-dune p-2 rounded flex items-center gap-2 text-amber-200 min-w-[115px]">
+        <i class="fas fa-rocket text-purple-400 text-base"></i>
         <div class="text-left leading-tight">
-          <div class="font-bold text-xs">Gun Turret</div>
+          <div class="font-bold text-xs">Artillery</div>
+          <div class="text-[10px] text-amber-400/80"><i class="fas fa-gem text-[8px]"></i> 300</div>
+        </div>
+      </button>
+
+      <button id="buildThopterBtn" class="btn-dune p-2 rounded flex items-center gap-2 text-amber-200 min-w-[115px]">
+        <i class="fas fa-plane-up text-yellow-400 text-base"></i>
+        <div class="text-left leading-tight">
+          <div class="font-bold text-xs">Ornithopter</div>
+          <div class="text-[10px] text-amber-400/80"><i class="fas fa-gem text-[8px]"></i> 200</div>
+        </div>
+      </button>
+
+      <button id="buildTurretBtn" class="btn-dune p-2 rounded flex items-center gap-2 text-amber-200 min-w-[110px]">
+        <i class="fas fa-tower-observation text-emerald-400 text-base"></i>
+        <div class="text-left leading-tight">
+          <div class="font-bold text-xs">Turret</div>
           <div class="text-[10px] text-amber-400/80"><i class="fas fa-gem text-[8px]"></i> 200</div>
         </div>
       </button>
     </div>
 
     <!-- Selected Info Box -->
-    <div id="selectionInfo" class="hidden md:flex items-center gap-3 bg-black/50 border border-amber-900/50 px-3 py-1.5 rounded min-w-[220px]">
+    <div id="selectionInfo" class="hidden md:flex items-center gap-3 bg-black/70 border border-amber-900/60 px-3 py-1.5 rounded min-w-[210px]">
       <i id="selectIcon" class="fas fa-square text-amber-400 text-xl"></i>
       <div>
         <div id="selectName" class="font-bold font-dune text-xs text-amber-200">No Selection</div>
@@ -335,11 +373,11 @@
   </div>
 
   <!-- GAME OVER OVERLAY -->
-  <div id="gameOverModal" class="hidden absolute inset-0 z-50 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-6">
+  <div id="gameOverModal" class="hidden absolute inset-0 z-50 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-6">
     <div class="max-w-md w-full bg-stone-950 border-2 border-amber-600/80 p-6 rounded-lg text-center space-y-4 shadow-2xl">
-      <h2 id="gameOverTitle" class="text-3xl font-extrabold font-dune text-amber-500 tracking-wider">VICTORY</h2>
-      <p id="gameOverSub" class="text-sm text-amber-200/80">You have secured control of Arrakis.</p>
-      <button id="modalRestartBtn" class="w-full py-3 btn-dune font-dune font-bold text-amber-300 rounded uppercase">
+      <h2 id="gameOverTitle" class="text-4xl font-extrabold font-dune text-amber-500 tracking-widest spice-glow">VICTORY</h2>
+      <p id="gameOverSub" class="text-sm text-amber-200/80">You have conquered the desert sands of Arrakis.</p>
+      <button id="modalRestartBtn" class="w-full py-3 btn-dune font-dune font-bold text-amber-300 rounded uppercase tracking-wider">
         Return to Main Menu
       </button>
     </div>
@@ -347,7 +385,7 @@
 
   <script>
     /* ==========================================================================
-       DUNE: SPICE WAR TACTICS - COMPLETE GAME ENGINE
+       DUNE: SPICE WAR TACTICS - MYSTICAL GRAPHICS & STRATEGY ENGINE
        ========================================================================== */
 
     // --- SOUND SYNTHESIZER (Web Audio API) ---
@@ -355,8 +393,6 @@
       constructor() {
         this.ctx = null;
         this.muted = true;
-        this.bgOsc = null;
-        this.bgGain = null;
         this.isPlayingBg = false;
       }
 
@@ -403,14 +439,14 @@
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(600, this.ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(80, this.ctx.currentTime + 0.15);
-          gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+          osc.frequency.setValueAtTime(700, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.18);
+          gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.18);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
           osc.start();
-          osc.stop(this.ctx.currentTime + 0.15);
+          osc.stop(this.ctx.currentTime + 0.18);
         } catch(e){}
       }
 
@@ -420,14 +456,14 @@
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = 'square';
-          osc.frequency.setValueAtTime(100, this.ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(20, this.ctx.currentTime + 0.4);
+          osc.frequency.setValueAtTime(120, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(25, this.ctx.currentTime + 0.5);
           gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.4);
+          gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
           osc.start();
-          osc.stop(this.ctx.currentTime + 0.4);
+          osc.stop(this.ctx.currentTime + 0.5);
         } catch(e){}
       }
 
@@ -437,15 +473,15 @@
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = 'triangle';
-          osc.frequency.setValueAtTime(40, this.ctx.currentTime);
-          osc.frequency.linearRampToValueAtTime(120, this.ctx.currentTime + 1.2);
-          osc.frequency.linearRampToValueAtTime(30, this.ctx.currentTime + 2.5);
-          gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 2.5);
+          osc.frequency.setValueAtTime(35, this.ctx.currentTime);
+          osc.frequency.linearRampToValueAtTime(140, this.ctx.currentTime + 1.5);
+          osc.frequency.linearRampToValueAtTime(25, this.ctx.currentTime + 2.8);
+          gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 2.8);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
           osc.start();
-          osc.stop(this.ctx.currentTime + 2.5);
+          osc.stop(this.ctx.currentTime + 2.8);
         } catch(e){}
       }
 
@@ -461,34 +497,38 @@
 
       musicLoop() {
         if (!this.isPlayingBg || this.muted) return;
-        const notes = [110, 130.81, 146.83, 164.81, 196.00, 220];
+        // Mystical Desert Melody
+        const notes = [98.00, 110.00, 130.81, 146.83, 164.81, 196.00, 220.00, 261.63];
         const freq = notes[Math.floor(Math.random() * notes.length)];
-        this.playTone(freq, 'sine', 2.0, 0.05);
+        this.playTone(freq, 'sine', 2.5, 0.06);
 
         setTimeout(() => {
           if (this.isPlayingBg) this.musicLoop();
-        }, 1800 + Math.random() * 1200);
+        }, 1600 + Math.random() * 1200);
       }
     }
 
     const audio = new SoundEngine();
 
-    // --- GAME CONSTANTS & CONFIGS ---
+    // --- FACTION & UNIT SPECS ---
     const GRID_SIZE = 40;
     const FACTIONS = {
-      atreides: { name: 'Atreides', color: '#2b7a78', accent: '#3aafa9', hpBonus: 1.2, speedBonus: 1.0 },
-      harkonnen: { name: 'Harkonnen', color: '#b82601', accent: '#e03e11', attackBonus: 1.2, costMultiplier: 0.85 },
-      fremen: { name: 'Fremen', color: '#2d6a4f', accent: '#52b788', speedBonus: 1.3, wormImmune: true }
+      atreides: { name: 'Atreides', color: '#2b7a78', accent: '#3aafa9', hpBonus: 1.25, speedBonus: 1.0 },
+      harkonnen: { name: 'Harkonnen', color: '#b82601', accent: '#e03e11', attackBonus: 1.25, costMultiplier: 0.85 },
+      fremen: { name: 'Fremen', color: '#2d6a4f', accent: '#52b788', speedBonus: 1.35, wormImmune: true }
     };
 
     const UNIT_TYPES = {
-      harvester: { name: 'Harvester', cost: 150, hp: 200, speed: 1.2, attack: 0, range: 0, icon: 'truck-monster' },
-      infantry: { name: 'Infantry', cost: 75, hp: 100, speed: 1.8, attack: 12, range: 3, icon: 'user-shield' },
-      tank: { name: 'Siege Tank', cost: 250, hp: 350, speed: 0.9, attack: 38, range: 5, icon: 'shuttle-space' },
-      turret: { name: 'Turret', cost: 200, hp: 300, speed: 0, attack: 25, range: 4, icon: 'tower-observation', isStatic: true }
+      harvester: { name: 'Harvester', cost: 150, hp: 250, speed: 1.1, attack: 0, range: 0, scale: 1.25, icon: 'truck-monster' },
+      infantry: { name: 'Light Infantry', cost: 75, hp: 110, speed: 1.8, attack: 14, range: 3, scale: 0.65, icon: 'user-shield' },
+      elite_guard: { name: 'Elite Guard', cost: 130, hp: 190, speed: 1.6, attack: 24, range: 3.5, scale: 0.75, icon: 'khanda' },
+      tank: { name: 'Siege Tank', cost: 250, hp: 380, speed: 0.95, attack: 42, range: 5, scale: 1.15, icon: 'shuttle-space' },
+      artillery: { name: 'Artillery', cost: 300, hp: 200, speed: 0.7, attack: 55, range: 8, scale: 1.1, icon: 'rocket' },
+      ornithopter: { name: 'Ornithopter', cost: 200, hp: 150, speed: 2.3, attack: 22, range: 4, scale: 0.9, isFlying: true, icon: 'plane-up' },
+      turret: { name: 'Gun Turret', cost: 200, hp: 350, speed: 0, attack: 28, range: 4.5, scale: 0.95, isStatic: true, icon: 'tower-observation' }
     };
 
-    // --- GAME STATE ---
+    // --- GAME ENGINE STATE ---
     let canvas, ctx;
     let tileSize = 32;
     let selectedFaction = 'atreides';
@@ -503,11 +543,12 @@
     let spiceFields = [];
     let rockTiles = [];
     let particles = [];
-    let wormState = { active: false, x: 0, y: 0, targetX: 0, targetY: 0, progress: 0, timer: 0 };
+    let spiceDustParticles = [];
+    let wormState = { active: false, x: 0, y: 0, targetX: 0, targetY: 0, progress: 0, timer: 300 };
 
     let selectedEntity = null;
-    let targetCell = null;
     let animationFrameId = null;
+    let animTicks = 0;
 
     // --- INIT & EVENT LISTENERS ---
     window.addEventListener('DOMContentLoaded', () => {
@@ -518,6 +559,7 @@
       window.addEventListener('resize', resizeCanvas);
 
       setupUIListeners();
+      initSpiceDust();
     });
 
     function resizeCanvas() {
@@ -527,23 +569,44 @@
       tileSize = Math.min(canvas.width, canvas.height) / 28;
     }
 
+    function initSpiceDust() {
+      spiceDustParticles = [];
+      for (let i = 0; i < 60; i++) {
+        spiceDustParticles.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          size: Math.random() * 2 + 0.5,
+          alpha: Math.random() * 0.6 + 0.2,
+          speedX: Math.random() * 0.4 + 0.1,
+          speedY: (Math.random() - 0.5) * 0.2
+        });
+      }
+    }
+
+    function triggerScreenShake() {
+      const body = document.getElementById('gameBody');
+      body.classList.remove('screen-shake');
+      void body.offsetWidth; // retrigger reflow
+      body.classList.add('screen-shake');
+    }
+
     function setupUIListeners() {
-      // Audio toggle button
+      // Audio toggle
       document.getElementById('audioToggleBtn').addEventListener('click', () => {
         const isMuted = !audio.toggleSound();
         document.getElementById('audioLabel').textContent = isMuted ? 'Music: OFF' : 'Music: ON';
         document.getElementById('audioIcon').className = isMuted ? 'fas fa-volume-mute text-base' : 'fas fa-volume-up text-base';
       });
 
-      // Instructions Modal Open/Close
+      // Instructions Modal
       const instructionsModal = document.getElementById('instructionsModal');
       const openModal = () => {
         audio.init();
-        audio.playTone(400, 'sine', 0.1, 0.08);
+        audio.playTone(450, 'sine', 0.1, 0.08);
         instructionsModal.classList.remove('hidden');
       };
       const closeModal = () => {
-        audio.playTone(300, 'sine', 0.1, 0.08);
+        audio.playTone(320, 'sine', 0.1, 0.08);
         instructionsModal.classList.add('hidden');
       };
 
@@ -584,14 +647,17 @@
       // Deployment Buttons
       document.getElementById('buildHarvesterBtn').addEventListener('click', () => spawnUnit('harvester'));
       document.getElementById('buildInfantryBtn').addEventListener('click', () => spawnUnit('infantry'));
+      document.getElementById('buildEliteBtn').addEventListener('click', () => spawnUnit('elite_guard'));
       document.getElementById('buildTankBtn').addEventListener('click', () => spawnUnit('tank'));
+      document.getElementById('buildArtilleryBtn').addEventListener('click', () => spawnUnit('artillery'));
+      document.getElementById('buildThopterBtn').addEventListener('click', () => spawnUnit('ornithopter'));
       document.getElementById('buildTurretBtn').addEventListener('click', () => spawnUnit('turret'));
 
       // Canvas Interaction
       canvas.addEventListener('click', handleCanvasClick);
     }
 
-    // --- GAME INITIALIZATION ---
+    // --- GAME SETUP ---
     function startNewGame() {
       audio.init();
       document.getElementById('mainMenu').classList.add('hidden');
@@ -600,14 +666,14 @@
       document.getElementById('gameOverModal').classList.add('hidden');
 
       p1Spice = 500;
-      p2Spice = (gameMode === 'ai' && campaignLevel === 3) ? 750 : 500;
+      p2Spice = (gameMode === 'ai' && campaignLevel === 3) ? 850 : 500;
       currentPlayer = 1;
       entities = [];
       spiceFields = [];
       rockTiles = [];
       particles = [];
       selectedEntity = null;
-      wormState = { active: false, x: 0, y: 0, targetX: 0, targetY: 0, progress: 0, timer: 300 };
+      wormState = { active: false, x: 0, y: 0, targetX: 0, targetY: 0, progress: 0, timer: 280 };
 
       generateMap();
       spawnInitialBases();
@@ -625,12 +691,11 @@
       document.getElementById('gameOverModal').classList.add('hidden');
     }
 
-    // MAP GENERATION
     function generateMap() {
       spiceFields = [];
       rockTiles = [];
 
-      // Create rock safe zones near corners
+      // Rocky Safe Plateaus
       for (let x = 0; x < 6; x++) {
         for (let y = 0; y < 6; y++) {
           rockTiles.push({x, y});
@@ -638,19 +703,19 @@
         }
       }
 
-      // Generate spice patches in deep sand
-      const numPatches = 6 + campaignLevel * 2;
+      // Deep Desert Spice Deposits
+      const numPatches = 7 + campaignLevel * 2;
       for (let i = 0; i < numPatches; i++) {
         const cx = Math.floor(Math.random() * (GRID_SIZE - 14)) + 7;
         const cy = Math.floor(Math.random() * (GRID_SIZE - 14)) + 7;
         
         for (let dx = -2; dx <= 2; dx++) {
           for (let dy = -2; dy <= 2; dy++) {
-            if (Math.random() > 0.3) {
+            if (Math.random() > 0.35) {
               const spiceX = cx + dx;
               const spiceY = cy + dy;
               if (!spiceFields.some(s => s.x === spiceX && s.y === spiceY)) {
-                spiceFields.push({ x: spiceX, y: spiceY, amount: 250 });
+                spiceFields.push({ x: spiceX, y: spiceY, amount: 300 });
               }
             }
           }
@@ -665,12 +730,13 @@
         player: 1,
         faction: selectedFaction,
         type: 'base',
-        name: FACTIONS[selectedFaction].name + ' Base',
+        name: FACTIONS[selectedFaction].name + ' Citadel',
         x: 2,
         y: 2,
-        hp: 1000,
-        maxHp: 1000,
-        color: FACTIONS[selectedFaction].color
+        hp: 1200,
+        maxHp: 1200,
+        color: FACTIONS[selectedFaction].color,
+        scale: 1.8
       };
 
       // Player 2 / AI HQ
@@ -680,22 +746,25 @@
         player: 2,
         faction: p2FactionKey,
         type: 'base',
-        name: FACTIONS[p2FactionKey].name + ' Citadel',
+        name: FACTIONS[p2FactionKey].name + ' Fortress',
         x: GRID_SIZE - 3,
         y: GRID_SIZE - 3,
-        hp: 1000,
-        maxHp: 1000,
-        color: FACTIONS[p2FactionKey].color
+        hp: 1200,
+        maxHp: 1200,
+        color: FACTIONS[p2FactionKey].color,
+        scale: 1.8
       };
 
       entities.push(p1Base, p2Base);
 
-      // Initial Units
+      // Starter Squads
       entities.push(
         createUnit(1, 'harvester', 3, 2),
         createUnit(1, 'infantry', 2, 4),
+        createUnit(1, 'elite_guard', 4, 3),
         createUnit(2, 'harvester', GRID_SIZE - 4, GRID_SIZE - 3),
-        createUnit(2, 'infantry', GRID_SIZE - 3, GRID_SIZE - 5)
+        createUnit(2, 'infantry', GRID_SIZE - 3, GRID_SIZE - 5),
+        createUnit(2, 'elite_guard', GRID_SIZE - 5, GRID_SIZE - 4)
       );
     }
 
@@ -725,39 +794,41 @@
         speed,
         carryingSpice: 0,
         color: faction.color,
-        icon: config.icon,
-        isStatic: config.isStatic || false
+        accent: faction.accent,
+        scale: config.scale,
+        isFlying: config.isFlying || false,
+        isStatic: config.isStatic || false,
+        angle: Math.random() * Math.PI * 2
       };
     }
 
-    // --- UNIT DEPLOYMENT ---
+    // --- RECRUITMENT ---
     function spawnUnit(typeKey) {
       const cost = UNIT_TYPES[typeKey].cost;
       const currentSpice = currentPlayer === 1 ? p1Spice : p2Spice;
 
       if (currentSpice < cost) {
-        audio.playTone(150, 'square', 0.2, 0.1);
+        audio.playTone(160, 'square', 0.2, 0.1);
         return;
       }
 
       const pBase = entities.find(e => e.player === currentPlayer && e.type === 'base');
       if (!pBase) return;
 
-      // Find nearby empty space
-      let spawnX = pBase.x + (Math.random() > 0.5 ? 1 : -1);
-      let spawnY = pBase.y + (Math.random() > 0.5 ? 1 : -1);
+      let spawnX = pBase.x + (Math.random() > 0.5 ? 1.5 : -1.5);
+      let spawnY = pBase.y + (Math.random() > 0.5 ? 1.5 : -1.5);
 
       if (currentPlayer === 1) p1Spice -= cost;
       else p2Spice -= cost;
 
       const newUnit = createUnit(currentPlayer, typeKey, spawnX, spawnY);
       entities.push(newUnit);
-      audio.playTone(440, 'sine', 0.15, 0.1);
+      audio.playTone(480, 'sine', 0.15, 0.1);
 
       updateHUD();
     }
 
-    // --- CANVAS INPUT HANDLING ---
+    // --- INPUT HANDLING ---
     function handleCanvasClick(e) {
       const rect = canvas.getBoundingClientRect();
       const clickX = e.clientX - rect.left;
@@ -766,63 +837,60 @@
       const gridX = Math.floor(clickX / tileSize);
       const gridY = Math.floor(clickY / tileSize);
 
-      // Check if unit clicked
-      const clickedEntity = entities.find(ent => Math.round(ent.x) === gridX && Math.round(ent.y) === gridY);
+      const clickedEntity = entities.find(ent => Math.hypot(ent.x - gridX, ent.y - gridY) < 1.2);
 
       if (clickedEntity) {
         if (clickedEntity.player === currentPlayer) {
           selectedEntity = clickedEntity;
-          audio.playTone(520, 'sine', 0.08, 0.08);
+          audio.playTone(550, 'sine', 0.08, 0.08);
         } else if (selectedEntity && selectedEntity.player === currentPlayer && selectedEntity.attack > 0) {
-          // Attack Target Command
+          // Target Order
           selectedEntity.targetEntity = clickedEntity;
           selectedEntity.targetX = clickedEntity.x;
           selectedEntity.targetY = clickedEntity.y;
-          audio.playTone(300, 'sawtooth', 0.1, 0.1);
+          audio.playTone(320, 'sawtooth', 0.1, 0.1);
         }
       } else if (selectedEntity && selectedEntity.player === currentPlayer && !selectedEntity.isStatic) {
-        // Move Command
+        // Move Order
         selectedEntity.targetX = gridX;
         selectedEntity.targetY = gridY;
         selectedEntity.targetEntity = null;
         
-        // Spawn click particle animation
         particles.push({
           x: (gridX + 0.5) * tileSize,
           y: (gridY + 0.5) * tileSize,
-          radius: tileSize * 0.4,
+          radius: tileSize * 0.45,
           alpha: 1.0,
           color: '#f7b731'
         });
 
-        audio.playTone(350, 'sine', 0.05, 0.05);
+        audio.playTone(380, 'sine', 0.05, 0.05);
       }
 
       updateHUD();
     }
 
-    // --- AI STRATEGY ENGINE ---
+    // --- AI WARLORD STRATEGY ---
     function updateAI() {
       if (gameMode !== 'ai') return;
 
       const aiUnits = entities.filter(e => e.player === 2);
       const playerUnits = entities.filter(e => e.player === 1);
 
-      // Auto Build Logic
-      if (p2Spice >= 250 && Math.random() < 0.02) {
-        const types = ['tank', 'infantry', 'harvester'];
-        const chosen = types[Math.floor(Math.random() * types.length)];
+      // AI Spawning
+      if (p2Spice >= 200 && Math.random() < 0.02) {
+        const roster = ['tank', 'infantry', 'elite_guard', 'artillery', 'ornithopter', 'harvester'];
+        const chosen = roster[Math.floor(Math.random() * roster.length)];
         const p2Base = entities.find(e => e.player === 2 && e.type === 'base');
-        if (p2Base) {
+        if (p2Base && p2Spice >= UNIT_TYPES[chosen].cost) {
           p2Spice -= UNIT_TYPES[chosen].cost;
           entities.push(createUnit(2, chosen, p2Base.x - 1, p2Base.y - 1));
         }
       }
 
-      // Unit Directives
+      // AI Unit Behavior
       aiUnits.forEach(unit => {
         if (unit.type === 'harvester') {
-          // Find nearest spice
           if (unit.carryingSpice >= 100) {
             const p2Base = entities.find(e => e.player === 2 && e.type === 'base');
             if (p2Base) {
@@ -835,8 +903,7 @@
             unit.targetY = nearestSpice.y;
           }
         } else if (!unit.isStatic && unit.type !== 'base') {
-          // Attack logic
-          if (playerUnits.length > 0 && Math.random() < 0.01) {
+          if (playerUnits.length > 0 && Math.random() < 0.012) {
             const target = playerUnits[Math.floor(Math.random() * playerUnits.length)];
             unit.targetX = target.x;
             unit.targetY = target.y;
@@ -846,8 +913,9 @@
       });
     }
 
-    // --- GAME LOOP & UPDATES ---
+    // --- GAME ENGINE LOOP ---
     function gameLoop() {
+      animTicks++;
       updateGameState();
       renderCanvas();
       animationFrameId = requestAnimationFrame(gameLoop);
@@ -865,12 +933,13 @@
       entities.forEach(unit => {
         if (unit.type === 'base') return;
 
-        // Movement
+        // Position Updates
         const dx = unit.targetX - unit.x;
         const dy = unit.targetY - unit.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist > 0.1) {
+          unit.angle = Math.atan2(dy, dx);
           unit.x += (dx / dist) * 0.05 * unit.speed;
           unit.y += (dy / dist) * 0.05 * unit.speed;
         } else {
@@ -878,26 +947,24 @@
           unit.y = unit.targetY;
         }
 
-        // Harvester Mining Logic
+        // Harvester Mining
         if (unit.type === 'harvester') {
-          const roundedX = Math.round(unit.x);
-          const roundedY = Math.round(unit.y);
+          const rx = Math.round(unit.x);
+          const ry = Math.round(unit.y);
 
-          // Check if on spice field
-          const spiceIdx = spiceFields.findIndex(s => s.x === roundedX && s.y === roundedY);
-          if (spiceIdx !== -1 && unit.carryingSpice < 100) {
-            unit.carryingSpice += 0.5;
-            spiceFields[spiceIdx].amount -= 0.5;
+          const spiceIdx = spiceFields.findIndex(s => s.x === rx && s.y === ry);
+          if (spiceIdx !== -1 && unit.carryingSpice < 120) {
+            unit.carryingSpice += 0.6;
+            spiceFields[spiceIdx].amount -= 0.6;
             if (spiceFields[spiceIdx].amount <= 0) {
               spiceFields.splice(spiceIdx, 1);
             }
           }
 
-          // Deposit spice at base
           const pBase = entities.find(e => e.player === unit.player && e.type === 'base');
           if (pBase) {
             const baseDist = Math.hypot(pBase.x - unit.x, pBase.y - unit.y);
-            if (baseDist < 2 && unit.carryingSpice > 0) {
+            if (baseDist < 2.2 && unit.carryingSpice > 0) {
               if (unit.player === 1) p1Spice += Math.floor(unit.carryingSpice);
               else p2Spice += Math.floor(unit.carryingSpice);
 
@@ -907,17 +974,15 @@
           }
         }
 
-        // Attack & Combat
+        // Combat Engine
         if (unit.attack > 0) {
           entities.forEach(target => {
             if (target.player !== unit.player && target.hp > 0) {
               const targetDist = Math.hypot(target.x - unit.x, target.y - unit.y);
               if (targetDist <= unit.range) {
-                // Deal damage
-                target.hp -= unit.attack * 0.02;
+                target.hp -= unit.attack * 0.022;
 
-                // Visual weapon effect particle
-                if (Math.random() < 0.2) {
+                if (Math.random() < 0.18) {
                   audio.playLaserSound();
                   particles.push({
                     type: 'laser',
@@ -925,8 +990,8 @@
                     y1: (unit.y + 0.5) * tileSize,
                     x2: (target.x + 0.5) * tileSize,
                     y2: (target.y + 0.5) * tileSize,
-                    color: unit.player === 1 ? '#3aafa9' : '#e03e11',
-                    life: 5
+                    color: unit.type === 'artillery' ? '#c084fc' : (unit.player === 1 ? '#3aafa9' : '#e03e11'),
+                    life: 6
                   });
                 }
               }
@@ -935,18 +1000,18 @@
         }
       });
 
-      // Filter dead entities
-      const initialCount = entities.length;
+      // Filter Dead Units
+      const preCount = entities.length;
       entities = entities.filter(e => {
         if (e.hp <= 0) {
           audio.playExplosionSound();
-          // Dead entity explosion effect
-          for (let i = 0; i < 8; i++) {
+          triggerScreenShake();
+          for (let i = 0; i < 10; i++) {
             particles.push({
               x: (e.x + 0.5) * tileSize,
               y: (e.y + 0.5) * tileSize,
-              vx: (Math.random() - 0.5) * 3,
-              vy: (Math.random() - 0.5) * 3,
+              vx: (Math.random() - 0.5) * 3.5,
+              vy: (Math.random() - 0.5) * 3.5,
               radius: Math.random() * 4 + 2,
               alpha: 1.0,
               color: '#f7b731'
@@ -957,26 +1022,25 @@
         return true;
       });
 
-      if (entities.length !== initialCount) updateHUD();
+      if (entities.length !== preCount) updateHUD();
     }
 
-    // --- SANDWORM (SHAI-HULUD) MECHANICS ---
+    // --- SHAI-HULUD (SANDWORM) LOGIC ---
     function updateSandworm() {
       wormState.timer--;
       
       const warningEl = document.getElementById('wormWarning');
 
-      if (wormState.timer <= 60 && wormState.timer > 0 && !wormState.active) {
+      if (wormState.timer <= 70 && wormState.timer > 0 && !wormState.active) {
         warningEl.classList.remove('hidden');
       } else {
         warningEl.classList.add('hidden');
       }
 
       if (wormState.timer <= 0 && !wormState.active) {
-        // Strike open sand units
         const sandUnits = entities.filter(e => {
           const isRock = rockTiles.some(r => r.x === Math.round(e.x) && r.y === Math.round(e.y));
-          const isImmune = FACTIONS[e.faction]?.wormImmune;
+          const isImmune = FACTIONS[e.faction]?.wormImmune || e.isFlying;
           return !isRock && !isImmune && e.type !== 'base';
         });
 
@@ -987,19 +1051,19 @@
           wormState.y = target.y;
           wormState.progress = 0;
           audio.playWormSound();
+          triggerScreenShake();
         } else {
-          wormState.timer = 400 + Math.random() * 300;
+          wormState.timer = 350 + Math.random() * 300;
         }
       }
 
       if (wormState.active) {
-        wormState.progress += 0.02;
+        wormState.progress += 0.018;
 
-        // Devour units in worm radius
-        if (wormState.progress >= 0.5 && wormState.progress <= 0.6) {
+        if (wormState.progress >= 0.48 && wormState.progress <= 0.58) {
           entities = entities.filter(e => {
             const dist = Math.hypot(e.x - wormState.x, e.y - wormState.y);
-            if (dist < 2.5 && e.type !== 'base' && !FACTIONS[e.faction]?.wormImmune) {
+            if (dist < 2.6 && e.type !== 'base' && !FACTIONS[e.faction]?.wormImmune && !e.isFlying) {
               return false;
             }
             return true;
@@ -1008,25 +1072,32 @@
 
         if (wormState.progress >= 1.0) {
           wormState.active = false;
-          wormState.timer = 500 + Math.random() * 400;
+          wormState.timer = 450 + Math.random() * 350;
         }
       }
     }
 
     function updateParticles() {
+      // Dust storm drift
+      spiceDustParticles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y > canvas.height || p.y < 0) p.y = Math.random() * canvas.height;
+      });
+
       particles.forEach(p => {
         if (p.type === 'laser') {
           p.life--;
         } else {
           p.x += p.vx || 0;
           p.y += p.vy || 0;
-          p.alpha -= 0.03;
+          p.alpha -= 0.035;
         }
       });
       particles = particles.filter(p => (p.life ? p.life > 0 : p.alpha > 0));
     }
 
-    // --- WIN / LOSS CONDITIONS ---
     function checkWinLossCondition() {
       const p1Base = entities.find(e => e.player === 1 && e.type === 'base');
       const p2Base = entities.find(e => e.player === 2 && e.type === 'base');
@@ -1040,24 +1111,22 @@
 
         if (!p1Base) {
           title.textContent = "DEFEAT";
-          title.className = "text-3xl font-extrabold font-dune text-red-500 tracking-wider";
-          sub.textContent = "Your forces were wiped out from Arrakis.";
+          title.className = "text-4xl font-extrabold font-dune text-red-500 tracking-widest spice-glow";
+          sub.textContent = "Your stronghold fell to enemy warlords.";
         } else {
           title.textContent = "VICTORY";
-          title.className = "text-3xl font-extrabold font-dune text-emerald-400 tracking-wider";
-          sub.textContent = "You have secured full dominance over the Spice!";
+          title.className = "text-4xl font-extrabold font-dune text-emerald-400 tracking-widest spice-glow";
+          sub.textContent = "You have secured total dominance over the Spice!";
         }
       }
     }
 
-    // --- HUD & INTERFACE UPDATES ---
     function updateHUD() {
       document.getElementById('spiceCount').textContent = Math.floor(currentPlayer === 1 ? p1Spice : p2Spice);
       
       const myUnits = entities.filter(e => e.player === currentPlayer && e.type !== 'base');
-      document.getElementById('popCount').textContent = `${myUnits.length} / 20`;
+      document.getElementById('popCount').textContent = `${myUnits.length} / 25`;
 
-      // Selected Info Box
       const selectBox = document.getElementById('selectionInfo');
       if (selectedEntity) {
         selectBox.classList.remove('hidden');
@@ -1069,96 +1138,213 @@
       }
     }
 
-    // --- RENDER ENGINE ---
+    // ==========================================================================
+    // --- GRAPHICS & CANVAS SHAPE RENDERING ---
+    // ==========================================================================
     function renderCanvas() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Render Sand Terrain Background
-      ctx.fillStyle = '#1c120c';
+      // Desert Ground Base
+      ctx.fillStyle = '#170e08';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Render Grid & Rock Formations
+      // Render Map Grid & Plateaus
       for (let x = 0; x < GRID_SIZE; x++) {
         for (let y = 0; y < GRID_SIZE; y++) {
           const isRock = rockTiles.some(r => r.x === x && r.y === y);
           
           if (isRock) {
-            ctx.fillStyle = '#2b1e16';
+            ctx.fillStyle = '#261810';
             ctx.fillRect(x * tileSize, y * tileSize, tileSize - 1, tileSize - 1);
+            ctx.fillStyle = '#2d1d13';
+            ctx.fillRect(x * tileSize + 2, y * tileSize + 2, tileSize - 5, tileSize - 5);
           } else {
-            ctx.fillStyle = '#23160e';
+            ctx.fillStyle = '#1e120a';
             ctx.fillRect(x * tileSize, y * tileSize, tileSize - 1, tileSize - 1);
           }
         }
       }
 
-      // Render Spice Fields
-      spiceFields.forEach(spice => {
-        ctx.fillStyle = '#e88a26';
-        ctx.shadowColor = '#e88a26';
-        ctx.shadowBlur = 6;
+      // Render Floating Spice Particles / Atmospheric Haze
+      spiceDustParticles.forEach(p => {
+        ctx.fillStyle = '#ea8a26';
+        ctx.globalAlpha = p.alpha * 0.5;
         ctx.beginPath();
-        ctx.arc(
-          (spice.x + 0.5) * tileSize,
-          (spice.y + 0.5) * tileSize,
-          tileSize * 0.3,
-          0,
-          Math.PI * 2
-        );
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fill();
+        ctx.globalAlpha = 1.0;
+      });
+
+      // Render Glowing Spice Fields
+      spiceFields.forEach(spice => {
+        const cx = (spice.x + 0.5) * tileSize;
+        const cy = (spice.y + 0.5) * tileSize;
+        
+        ctx.fillStyle = '#ea8a26';
+        ctx.shadowColor = '#f7b731';
+        ctx.shadowBlur = 10 + Math.sin(animTicks * 0.05) * 4;
+        
+        ctx.beginPath();
+        ctx.arc(cx, cy, tileSize * 0.35, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Inner Mystic Core
+        ctx.fillStyle = '#ffeaa7';
+        ctx.beginPath();
+        ctx.arc(cx, cy, tileSize * 0.15, 0, Math.PI * 2);
+        ctx.fill();
+        
         ctx.shadowBlur = 0;
       });
 
-      // Render Selected Highlight
+      // Render Selection Highlight Ring
       if (selectedEntity) {
+        const cx = (selectedEntity.x + 0.5) * tileSize;
+        const cy = (selectedEntity.y + 0.5) * tileSize;
         ctx.strokeStyle = '#f7b731';
         ctx.lineWidth = 2;
-        ctx.strokeRect(
-          selectedEntity.x * tileSize - 2,
-          selectedEntity.y * tileSize - 2,
-          tileSize + 4,
-          tileSize + 4
-        );
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.arc(cx, cy, tileSize * selectedEntity.scale, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
       }
 
-      // Render Base & Units
+      // Render Units & Structures with Custom Graphics Shapes
       entities.forEach(ent => {
+        const cx = (ent.x + 0.5) * tileSize;
+        const cy = (ent.y + 0.5) * tileSize;
+
+        ctx.save();
+        ctx.translate(cx, cy);
+
+        // Render Flying Shadow underneath
+        if (ent.isFlying) {
+          ctx.fillStyle = 'rgba(0,0,0,0.4)';
+          ctx.beginPath();
+          ctx.ellipse(8, 12, tileSize * 0.4, tileSize * 0.2, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Draw Custom Shapes by Unit Type
         ctx.fillStyle = ent.color;
+        ctx.strokeStyle = ent.accent || '#ffffff';
+        ctx.lineWidth = 1.5;
 
         if (ent.type === 'base') {
-          ctx.fillRect(ent.x * tileSize, ent.y * tileSize, tileSize * 2, tileSize * 2);
-          ctx.fillStyle = '#ffffff';
-          ctx.font = '10px Cinzel';
-          ctx.fillText(ent.player === 1 ? 'HQ' : 'CITADEL', ent.x * tileSize + 4, ent.y * tileSize + 18);
-        } else {
-          // Circular unit design
+          // Multi-Layered Citadel Structure
+          const s = tileSize * 0.8;
           ctx.beginPath();
-          ctx.arc(
-            (ent.x + 0.5) * tileSize,
-            (ent.y + 0.5) * tileSize,
-            tileSize * 0.38,
-            0,
-            Math.PI * 2
-          );
+          for (let i = 0; i < 6; i++) {
+            const angle = (i * Math.PI) / 3;
+            const px = Math.cos(angle) * s;
+            const py = Math.sin(angle) * s;
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.closePath();
           ctx.fill();
-          ctx.strokeStyle = '#000000';
-          ctx.lineWidth = 1;
           ctx.stroke();
 
-          // Health bar above unit
-          const hpRatio = ent.hp / ent.maxHp;
-          ctx.fillStyle = '#222';
-          ctx.fillRect(ent.x * tileSize, ent.y * tileSize - 4, tileSize, 3);
-          ctx.fillStyle = hpRatio > 0.5 ? '#10b981' : '#ef4444';
-          ctx.fillRect(ent.x * tileSize, ent.y * tileSize - 4, tileSize * hpRatio, 3);
+          // Central Reactor Glow
+          ctx.fillStyle = '#f7b731';
+          ctx.beginPath();
+          ctx.arc(0, 0, tileSize * 0.3, 0, Math.PI * 2);
+          ctx.fill();
+
+        } else if (ent.type === 'harvester') {
+          // Heavy Hex Rig Body
+          ctx.rotate(ent.angle || 0);
+          ctx.fillRect(-tileSize * 0.45, -tileSize * 0.3, tileSize * 0.9, tileSize * 0.6);
+          ctx.strokeRect(-tileSize * 0.45, -tileSize * 0.3, tileSize * 0.9, tileSize * 0.6);
+          // Front Harvesting Scoop
+          ctx.fillStyle = '#f7b731';
+          ctx.fillRect(tileSize * 0.35, -tileSize * 0.25, tileSize * 0.2, tileSize * 0.5);
+
+        } else if (ent.type === 'infantry') {
+          // Tactical Diamond Formation
+          ctx.rotate(ent.angle || 0);
+          ctx.beginPath();
+          ctx.moveTo(tileSize * 0.3, 0);
+          ctx.lineTo(-tileSize * 0.2, -tileSize * 0.25);
+          ctx.lineTo(-tileSize * 0.1, 0);
+          ctx.lineTo(-tileSize * 0.2, tileSize * 0.25);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+        } else if (ent.type === 'elite_guard') {
+          // Mystical Shielded Hex Warrior
+          ctx.beginPath();
+          ctx.arc(0, 0, tileSize * 0.32, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          // Blade aura pulse
+          ctx.strokeStyle = '#52b788';
+          ctx.beginPath();
+          ctx.arc(0, 0, tileSize * 0.42 + Math.sin(animTicks * 0.1) * 2, 0, Math.PI * 2);
+          ctx.stroke();
+
+        } else if (ent.type === 'tank') {
+          // Heavy Armored Tank Hull & Cannon
+          ctx.rotate(ent.angle || 0);
+          ctx.fillRect(-tileSize * 0.4, -tileSize * 0.3, tileSize * 0.8, tileSize * 0.6);
+          ctx.strokeRect(-tileSize * 0.4, -tileSize * 0.3, tileSize * 0.8, tileSize * 0.6);
+          // Long Cannon Barrel
+          ctx.fillStyle = '#111';
+          ctx.fillRect(0, -tileSize * 0.08, tileSize * 0.55, tileSize * 0.16);
+
+        } else if (ent.type === 'artillery') {
+          // Rocket Artillery Launch Pad
+          ctx.rotate(ent.angle || 0);
+          ctx.fillRect(-tileSize * 0.35, -tileSize * 0.35, tileSize * 0.7, tileSize * 0.7);
+          ctx.strokeRect(-tileSize * 0.35, -tileSize * 0.35, tileSize * 0.7, tileSize * 0.7);
+          ctx.fillStyle = '#c084fc';
+          ctx.fillRect(-tileSize * 0.2, -tileSize * 0.25, tileSize * 0.4, tileSize * 0.5);
+
+        } else if (ent.type === 'ornithopter') {
+          // Dragonfly Flapping Wing Aircraft
+          ctx.rotate(ent.angle || 0);
+          // Fuselage
+          ctx.beginPath();
+          ctx.ellipse(0, 0, tileSize * 0.4, tileSize * 0.15, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          // Animated Flapping Wings
+          const flap = Math.sin(animTicks * 0.4) * (tileSize * 0.35);
+          ctx.strokeStyle = '#f7b731';
+          ctx.beginPath();
+          ctx.moveTo(0, -tileSize * 0.1);
+          ctx.lineTo(0, -tileSize * 0.6 - flap);
+          ctx.moveTo(0, tileSize * 0.1);
+          ctx.lineTo(0, tileSize * 0.6 + flap);
+          ctx.stroke();
+
+        } else if (ent.type === 'turret') {
+          // Fortified Battery Tower
+          ctx.fillRect(-tileSize * 0.3, -tileSize * 0.3, tileSize * 0.6, tileSize * 0.6);
+          ctx.strokeRect(-tileSize * 0.3, -tileSize * 0.3, tileSize * 0.6, tileSize * 0.6);
+          ctx.fillStyle = '#3aafa9';
+          ctx.beginPath();
+          ctx.arc(0, 0, tileSize * 0.2, 0, Math.PI * 2);
+          ctx.fill();
         }
+
+        ctx.restore();
+
+        // Render Health Bars
+        const hpRatio = ent.hp / ent.maxHp;
+        ctx.fillStyle = '#111111';
+        ctx.fillRect(cx - tileSize * 0.4, cy - tileSize * 0.6, tileSize * 0.8, 3.5);
+        ctx.fillStyle = hpRatio > 0.5 ? '#10b981' : '#ef4444';
+        ctx.fillRect(cx - tileSize * 0.4, cy - tileSize * 0.6, tileSize * 0.8 * hpRatio, 3.5);
       });
 
-      // Render Particles
+      // Render Visual Effects & Laser Trails
       particles.forEach(p => {
         if (p.type === 'laser') {
           ctx.strokeStyle = p.color;
-          ctx.lineWidth = 2;
+          ctx.lineWidth = 2.5;
           ctx.beginPath();
           ctx.moveTo(p.x1, p.y1);
           ctx.lineTo(p.x2, p.y2);
@@ -1173,19 +1359,27 @@
         }
       });
 
-      // Render Sandworm Animations
+      // Render Shai-Hulud Sandworm Maw
       if (wormState.active) {
         const cx = (wormState.x + 0.5) * tileSize;
         const cy = (wormState.y + 0.5) * tileSize;
-        const radius = Math.sin(wormState.progress * Math.PI) * (tileSize * 2.5);
+        const radius = Math.sin(wormState.progress * Math.PI) * (tileSize * 2.8);
 
-        ctx.fillStyle = '#0c0804';
+        // Worm Pit Maw
+        ctx.fillStyle = '#070402';
         ctx.beginPath();
         ctx.arc(cx, cy, radius, 0, Math.PI * 2);
         ctx.fill();
 
+        // Ringed Sandworm Maw Edge & Teeth
         ctx.strokeStyle = '#e03e11';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        ctx.strokeStyle = '#f7b731';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius * 0.6, 0, Math.PI * 2);
         ctx.stroke();
       }
     }
