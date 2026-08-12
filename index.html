@@ -54,6 +54,11 @@
       box-shadow: 0 0 14px rgba(194, 136, 58, 0.6);
       border-color: #f7b731;
     }
+    .btn-dune.active-build {
+      background: linear-gradient(135deg, #5d3817 0%, #a36528 100%);
+      border-color: #f7b731;
+      box-shadow: 0 0 16px rgba(247, 183, 49, 0.8);
+    }
     .btn-dune:disabled {
       opacity: 0.35;
       cursor: not-allowed;
@@ -191,21 +196,33 @@
       <!-- Scrollable Guide Content -->
       <div class="overflow-y-auto space-y-4 pr-2 text-xs md:text-sm text-stone-300 leading-relaxed">
         
+        <!-- Peace Timer -->
+        <div class="bg-black/50 border border-amber-600/60 p-3 rounded">
+          <h3 class="font-dune text-amber-400 font-bold text-sm mb-1 uppercase"><i class="fas fa-hourglass-start mr-1"></i> 10-Second Warm-up Phase</h3>
+          <p>Every match begins with a 10-second truce timer! Use this time to deploy Harvesters, construct Windmills near Spice fields, or fortify defenses before the enemy AI and Sandworms activate.</p>
+        </div>
+
         <!-- Objective -->
         <div class="bg-black/50 border border-amber-900/40 p-3 rounded">
           <h3 class="font-dune text-amber-400 font-bold text-sm mb-1 uppercase"><i class="fas fa-crosshairs mr-1"></i> Objective</h3>
-          <p>Harvest Spice, assemble an army of infantry, heavy armor, and aircraft, and obliterate the enemy Citadel to rule Arrakis!</p>
+          <p>Harvest Spice, assemble an army of infantry, heavy armor, and aircraft, build defensive towers anywhere on the grid, and obliterate the enemy Citadel to rule Arrakis!</p>
         </div>
 
         <!-- Controls -->
         <div class="bg-black/50 border border-amber-900/40 p-3 rounded space-y-2">
           <h3 class="font-dune text-amber-400 font-bold text-sm uppercase"><i class="fas fa-mouse mr-1"></i> Commands & Controls</h3>
           <ul class="list-disc list-inside space-y-1 text-stone-300">
-            <li><strong class="text-amber-200">Select Unit:</strong> Click/Tap any of your active units or structures.</li>
+            <li><strong class="text-amber-200">Select Unit/Building:</strong> Click/Tap any of your active units or structures.</li>
             <li><strong class="text-amber-200">Move Order:</strong> Select a unit, then click any empty desert location.</li>
             <li><strong class="text-amber-200">Attack Order:</strong> Select an offensive unit, then click an enemy unit or citadel.</li>
-            <li><strong class="text-amber-200">Deploy Forces:</strong> Use Spice in the bottom control dock to spawn forces.</li>
+            <li><strong class="text-amber-200">Free-Placement Buildings:</strong> Click Windmill, Turret, or Silo, then click anywhere on the map grid to place it!</li>
           </ul>
+        </div>
+
+        <!-- Windmill Mechanic -->
+        <div class="bg-black/50 border border-amber-900/40 p-3 rounded space-y-2">
+          <h3 class="font-dune text-cyan-400 font-bold text-sm uppercase"><i class="fas fa-fan text-cyan-400 mr-1"></i> Spice Windmills</h3>
+          <p>Construct a <strong class="text-cyan-300">Spice Windmill</strong> near or directly on a Spice field. It will automatically refine raw spice into its internal storage. <strong class="text-amber-300">Harvesters</strong> can pull spice directly from filled Windmills and bring it back to your base!</p>
         </div>
 
         <!-- Sandworms -->
@@ -217,31 +234,6 @@
             <li><em class="text-amber-300">Ornithopters fly above the sand and are completely safe.</em></li>
             <li><em class="text-emerald-400">Fremen units ride desert sands and are immune to sandworms.</em></li>
           </ul>
-        </div>
-
-        <!-- Roster Breakdown -->
-        <div class="bg-black/50 border border-amber-900/40 p-3 rounded">
-          <h3 class="font-dune text-amber-400 font-bold text-sm mb-2 uppercase"><i class="fas fa-cubes mr-1"></i> Combat Roster</h3>
-          <div class="grid grid-cols-2 gap-2 text-xs">
-            <div class="p-2 bg-stone-900/90 rounded border border-amber-900/30">
-              <strong class="text-amber-300">Harvester (150 Spice):</strong> Heavy rig that mines spice fields automatically.
-            </div>
-            <div class="p-2 bg-stone-900/90 rounded border border-amber-900/30">
-              <strong class="text-blue-300">Light Infantry (75 Spice):</strong> Agile diamond-formation rifle squad.
-            </div>
-            <div class="p-2 bg-stone-900/90 rounded border border-amber-900/30">
-              <strong class="text-teal-300">Elite Guard (130 Spice):</strong> Fedaykin/Sardaukar unit with high HP and blade shields.
-            </div>
-            <div class="p-2 bg-stone-900/90 rounded border border-amber-900/30">
-              <strong class="text-red-300">Siege Tank (250 Spice):</strong> Heavy polygon tread tank with armor piercing cannon.
-            </div>
-            <div class="p-2 bg-stone-900/90 rounded border border-amber-900/30">
-              <strong class="text-purple-300">Rocket Artillery (300 Spice):</strong> Extreme long-range bombardment battery.
-            </div>
-            <div class="p-2 bg-stone-900/90 rounded border border-amber-900/30">
-              <strong class="text-yellow-300">Ornithopter (200 Spice):</strong> Flapping-wing aircraft that ignores sand terrain.
-            </div>
-          </div>
         </div>
 
       </div>
@@ -274,8 +266,11 @@
       </div>
     </div>
 
-    <!-- Active Turn / Objective Info -->
+    <!-- Active Turn / Warmup Banner -->
     <div class="flex items-center gap-3">
+      <div id="warmupBanner" class="hidden px-3 py-1 bg-amber-500/20 border border-amber-500/80 text-amber-300 font-dune font-bold rounded tracking-wider animate-pulse">
+        <i class="fas fa-hourglass-start mr-1.5"></i> WARMIN-UP TRUCE: <span id="warmupTimer" class="font-mono font-extrabold text-amber-200">10</span>s
+      </div>
       <div id="turnIndicator" class="px-3 py-1 bg-amber-950/90 border border-amber-600/60 text-amber-300 font-dune font-bold rounded tracking-wider">
         ACTIVE COMMAND
       </div>
@@ -286,6 +281,11 @@
   <div class="relative flex-1 w-full h-full overflow-hidden bg-amber-950/20">
     <canvas id="gameCanvas" class="w-full h-full block"></canvas>
     
+    <!-- Build Placement Mode Overlay Indicator -->
+    <div id="buildPlacementPrompt" class="hidden pointer-events-none absolute top-4 left-1/2 -translate-x-1/2 bg-black/85 border border-amber-500 text-amber-300 font-dune px-4 py-2 rounded shadow-2xl text-xs uppercase tracking-widest flex items-center gap-2 z-20">
+      <i class="fas fa-hammer text-amber-400 animate-spin"></i> Click anywhere on the terrain to place building
+    </div>
+
     <!-- Floating Worm Warning Overlay -->
     <div id="wormWarning" class="hidden pointer-events-none absolute inset-0 bg-red-950/30 flex items-center justify-center animate-pulse">
       <div class="bg-black/90 border-2 border-red-600/90 p-5 rounded-lg text-center shadow-2xl backdrop-blur">
@@ -301,7 +301,7 @@
     
     <!-- Building & Unit Production Panel -->
     <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 w-full md:w-auto">
-      <span class="text-xs font-dune text-amber-500 font-bold uppercase tracking-wider mr-1">RECRUIT:</span>
+      <span class="text-xs font-dune text-amber-500 font-bold uppercase tracking-wider mr-1">DEPLOY:</span>
       
       <button id="buildHarvesterBtn" class="btn-dune p-2 rounded flex items-center gap-2 text-amber-200 min-w-[115px]">
         <i class="fas fa-truck-monster text-amber-400 text-base"></i>
@@ -351,11 +351,30 @@
         </div>
       </button>
 
+      <!-- FREE PLACEMENT BUILDINGS -->
+      <span class="text-xs font-dune text-cyan-500 font-bold uppercase tracking-wider ml-2 mr-1">BUILDINGS:</span>
+
+      <button id="buildWindmillBtn" class="btn-dune p-2 rounded flex items-center gap-2 text-cyan-200 min-w-[125px]">
+        <i class="fas fa-fan text-cyan-400 text-base"></i>
+        <div class="text-left leading-tight">
+          <div class="font-bold text-xs">Spice Windmill</div>
+          <div class="text-[10px] text-amber-400/80"><i class="fas fa-gem text-[8px]"></i> 180</div>
+        </div>
+      </button>
+
       <button id="buildTurretBtn" class="btn-dune p-2 rounded flex items-center gap-2 text-amber-200 min-w-[110px]">
         <i class="fas fa-tower-observation text-emerald-400 text-base"></i>
         <div class="text-left leading-tight">
-          <div class="font-bold text-xs">Turret</div>
+          <div class="font-bold text-xs">Gun Turret</div>
           <div class="text-[10px] text-amber-400/80"><i class="fas fa-gem text-[8px]"></i> 200</div>
+        </div>
+      </button>
+
+      <button id="buildSiloBtn" class="btn-dune p-2 rounded flex items-center gap-2 text-amber-200 min-w-[110px]">
+        <i class="fas fa-database text-amber-400 text-base"></i>
+        <div class="text-left leading-tight">
+          <div class="font-bold text-xs">Spice Silo</div>
+          <div class="text-[10px] text-amber-400/80"><i class="fas fa-gem text-[8px]"></i> 120</div>
         </div>
       </button>
     </div>
@@ -497,7 +516,6 @@
 
       musicLoop() {
         if (!this.isPlayingBg || this.muted) return;
-        // Mystical Desert Melody
         const notes = [98.00, 110.00, 130.81, 146.83, 164.81, 196.00, 220.00, 261.63];
         const freq = notes[Math.floor(Math.random() * notes.length)];
         this.playTone(freq, 'sine', 2.5, 0.06);
@@ -525,7 +543,9 @@
       tank: { name: 'Siege Tank', cost: 250, hp: 380, speed: 0.95, attack: 42, range: 5, scale: 1.15, icon: 'shuttle-space' },
       artillery: { name: 'Artillery', cost: 300, hp: 200, speed: 0.7, attack: 55, range: 8, scale: 1.1, icon: 'rocket' },
       ornithopter: { name: 'Ornithopter', cost: 200, hp: 150, speed: 2.3, attack: 22, range: 4, scale: 0.9, isFlying: true, icon: 'plane-up' },
-      turret: { name: 'Gun Turret', cost: 200, hp: 350, speed: 0, attack: 28, range: 4.5, scale: 0.95, isStatic: true, icon: 'tower-observation' }
+      windmill: { name: 'Spice Windmill', cost: 180, hp: 280, speed: 0, attack: 0, range: 0, scale: 1.0, isStatic: true, isBuilding: true, icon: 'fan' },
+      turret: { name: 'Gun Turret', cost: 200, hp: 350, speed: 0, attack: 28, range: 4.5, scale: 0.95, isStatic: true, isBuilding: true, icon: 'tower-observation' },
+      silo: { name: 'Spice Silo', cost: 120, hp: 300, speed: 0, attack: 0, range: 0, scale: 0.9, isStatic: true, isBuilding: true, icon: 'database' }
     };
 
     // --- GAME ENGINE STATE ---
@@ -538,6 +558,11 @@
     let p1Spice = 500;
     let p2Spice = 500;
     let currentPlayer = 1;
+    
+    let warmupSecondsLeft = 10;
+    let warmupInterval = null;
+
+    let buildingModeType = null; // Stores building type waiting for placement click
     
     let entities = [];
     let spiceFields = [];
@@ -586,7 +611,7 @@
     function triggerScreenShake() {
       const body = document.getElementById('gameBody');
       body.classList.remove('screen-shake');
-      void body.offsetWidth; // retrigger reflow
+      void body.offsetWidth;
       body.classList.add('screen-shake');
     }
 
@@ -644,17 +669,44 @@
       document.getElementById('menuReturnBtn').addEventListener('click', returnToMainMenu);
       document.getElementById('modalRestartBtn').addEventListener('click', returnToMainMenu);
 
-      // Deployment Buttons
+      // Deployment & Building Buttons
       document.getElementById('buildHarvesterBtn').addEventListener('click', () => spawnUnit('harvester'));
       document.getElementById('buildInfantryBtn').addEventListener('click', () => spawnUnit('infantry'));
       document.getElementById('buildEliteBtn').addEventListener('click', () => spawnUnit('elite_guard'));
       document.getElementById('buildTankBtn').addEventListener('click', () => spawnUnit('tank'));
       document.getElementById('buildArtilleryBtn').addEventListener('click', () => spawnUnit('artillery'));
       document.getElementById('buildThopterBtn').addEventListener('click', () => spawnUnit('ornithopter'));
-      document.getElementById('buildTurretBtn').addEventListener('click', () => spawnUnit('turret'));
+
+      // Free Placement Buildings Mode Triggers
+      document.getElementById('buildWindmillBtn').addEventListener('click', (e) => setBuildingPlacementMode('windmill', e.currentTarget));
+      document.getElementById('buildTurretBtn').addEventListener('click', (e) => setBuildingPlacementMode('turret', e.currentTarget));
+      document.getElementById('buildSiloBtn').addEventListener('click', (e) => setBuildingPlacementMode('silo', e.currentTarget));
 
       // Canvas Interaction
       canvas.addEventListener('click', handleCanvasClick);
+    }
+
+    function setBuildingPlacementMode(typeKey, btnEl) {
+      if (buildingModeType === typeKey) {
+        // Toggle Off
+        buildingModeType = null;
+        document.getElementById('buildPlacementPrompt').classList.add('hidden');
+        if (btnEl) btnEl.classList.remove('active-build');
+        return;
+      }
+
+      const cost = UNIT_TYPES[typeKey].cost;
+      const currentSpice = currentPlayer === 1 ? p1Spice : p2Spice;
+      if (currentSpice < cost) {
+        audio.playTone(160, 'square', 0.2, 0.1);
+        return;
+      }
+
+      document.querySelectorAll('.btn-dune').forEach(b => b.classList.remove('active-build'));
+      buildingModeType = typeKey;
+      if (btnEl) btnEl.classList.add('active-build');
+      document.getElementById('buildPlacementPrompt').classList.remove('hidden');
+      audio.playTone(520, 'sine', 0.1, 0.1);
     }
 
     // --- GAME SETUP ---
@@ -668,12 +720,32 @@
       p1Spice = 500;
       p2Spice = (gameMode === 'ai' && campaignLevel === 3) ? 850 : 500;
       currentPlayer = 1;
+      buildingModeType = null;
+      document.getElementById('buildPlacementPrompt').classList.add('hidden');
+      document.querySelectorAll('.btn-dune').forEach(b => b.classList.remove('active-build'));
+
       entities = [];
       spiceFields = [];
       rockTiles = [];
       particles = [];
       selectedEntity = null;
-      wormState = { active: false, x: 0, y: 0, targetX: 0, targetY: 0, progress: 0, timer: 280 };
+      wormState = { active: false, x: 0, y: 0, targetX: 0, targetY: 0, progress: 0, timer: 300 };
+
+      // Start 10-Second Peace Timer
+      warmupSecondsLeft = 10;
+      document.getElementById('warmupBanner').classList.remove('hidden');
+      document.getElementById('warmupTimer').textContent = warmupSecondsLeft;
+
+      if (warmupInterval) clearInterval(warmupInterval);
+      warmupInterval = setInterval(() => {
+        warmupSecondsLeft--;
+        document.getElementById('warmupTimer').textContent = warmupSecondsLeft;
+        if (warmupSecondsLeft <= 0) {
+          clearInterval(warmupInterval);
+          document.getElementById('warmupBanner').classList.add('hidden');
+          audio.playTone(600, 'sine', 0.3, 0.15);
+        }
+      }, 1000);
 
       generateMap();
       spawnInitialBases();
@@ -684,6 +756,7 @@
     }
 
     function returnToMainMenu() {
+      if (warmupInterval) clearInterval(warmupInterval);
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
       document.getElementById('mainMenu').classList.remove('hidden');
       document.getElementById('gameHudTop').classList.add('hidden');
@@ -715,7 +788,7 @@
               const spiceX = cx + dx;
               const spiceY = cy + dy;
               if (!spiceFields.some(s => s.x === spiceX && s.y === spiceY)) {
-                spiceFields.push({ x: spiceX, y: spiceY, amount: 300 });
+                spiceFields.push({ x: spiceX, y: spiceY, amount: 350 });
               }
             }
           }
@@ -793,16 +866,18 @@
         range: config.range,
         speed,
         carryingSpice: 0,
+        storedSpice: 0, // Used for Windmill automatic refining
         color: faction.color,
         accent: faction.accent,
         scale: config.scale,
         isFlying: config.isFlying || false,
         isStatic: config.isStatic || false,
+        isBuilding: config.isBuilding || false,
         angle: Math.random() * Math.PI * 2
       };
     }
 
-    // --- RECRUITMENT ---
+    // --- RECRUITMENT & BUILDING ---
     function spawnUnit(typeKey) {
       const cost = UNIT_TYPES[typeKey].cost;
       const currentSpice = currentPlayer === 1 ? p1Spice : p2Spice;
@@ -836,6 +911,42 @@
 
       const gridX = Math.floor(clickX / tileSize);
       const gridY = Math.floor(clickY / tileSize);
+
+      // Handle Building Free Placement Order
+      if (buildingModeType) {
+        const cost = UNIT_TYPES[buildingModeType].cost;
+        const currentSpice = currentPlayer === 1 ? p1Spice : p2Spice;
+
+        if (currentSpice >= cost) {
+          if (currentPlayer === 1) p1Spice -= cost;
+          else p2Spice -= cost;
+
+          const building = createUnit(currentPlayer, buildingModeType, gridX, gridY);
+          entities.push(building);
+          
+          audio.playTone(650, 'sine', 0.2, 0.15);
+
+          // Spawn Placement Particles
+          for (let i = 0; i < 8; i++) {
+            particles.push({
+              x: (gridX + 0.5) * tileSize,
+              y: (gridY + 0.5) * tileSize,
+              vx: (Math.random() - 0.5) * 2,
+              vy: (Math.random() - 0.5) * 2,
+              radius: Math.random() * 3 + 1,
+              alpha: 1.0,
+              color: '#3aafa9'
+            });
+          }
+        }
+
+        // Reset building placement mode
+        buildingModeType = null;
+        document.getElementById('buildPlacementPrompt').classList.add('hidden');
+        document.querySelectorAll('.btn-dune').forEach(b => b.classList.remove('active-build'));
+        updateHUD();
+        return;
+      }
 
       const clickedEntity = entities.find(ent => Math.hypot(ent.x - gridX, ent.y - gridY) < 1.2);
 
@@ -873,18 +984,26 @@
     // --- AI WARLORD STRATEGY ---
     function updateAI() {
       if (gameMode !== 'ai') return;
+      if (warmupSecondsLeft > 0) return; // Paused during 10s truce
 
       const aiUnits = entities.filter(e => e.player === 2);
       const playerUnits = entities.filter(e => e.player === 1);
 
-      // AI Spawning
+      // AI Spawning & Free-building
       if (p2Spice >= 200 && Math.random() < 0.02) {
-        const roster = ['tank', 'infantry', 'elite_guard', 'artillery', 'ornithopter', 'harvester'];
+        const roster = ['tank', 'infantry', 'elite_guard', 'artillery', 'ornithopter', 'harvester', 'turret', 'windmill'];
         const chosen = roster[Math.floor(Math.random() * roster.length)];
         const p2Base = entities.find(e => e.player === 2 && e.type === 'base');
         if (p2Base && p2Spice >= UNIT_TYPES[chosen].cost) {
           p2Spice -= UNIT_TYPES[chosen].cost;
-          entities.push(createUnit(2, chosen, p2Base.x - 1, p2Base.y - 1));
+          if (UNIT_TYPES[chosen].isBuilding) {
+            // Build near base
+            const bx = p2Base.x + (Math.floor(Math.random() * 6) - 3);
+            const by = p2Base.y + (Math.floor(Math.random() * 6) - 3);
+            entities.push(createUnit(2, chosen, bx, by));
+          } else {
+            entities.push(createUnit(2, chosen, p2Base.x - 1, p2Base.y - 1));
+          }
         }
       }
 
@@ -897,10 +1016,17 @@
               unit.targetX = p2Base.x;
               unit.targetY = p2Base.y;
             }
-          } else if (spiceFields.length > 0) {
-            const nearestSpice = spiceFields[0];
-            unit.targetX = nearestSpice.x;
-            unit.targetY = nearestSpice.y;
+          } else {
+            // Check filled windmills first
+            const readyWindmill = entities.find(e => e.player === 2 && e.type === 'windmill' && e.storedSpice >= 30);
+            if (readyWindmill) {
+              unit.targetX = readyWindmill.x;
+              unit.targetY = readyWindmill.y;
+            } else if (spiceFields.length > 0) {
+              const nearestSpice = spiceFields[0];
+              unit.targetX = nearestSpice.x;
+              unit.targetY = nearestSpice.y;
+            }
           }
         } else if (!unit.isStatic && unit.type !== 'base') {
           if (playerUnits.length > 0 && Math.random() < 0.012) {
@@ -924,9 +1050,30 @@
     function updateGameState() {
       updateAI();
       updateUnits();
+      updateWindmills();
       updateSandworm();
       updateParticles();
       checkWinLossCondition();
+    }
+
+    // --- WINDMILL AUTOMATED HARVESTING ---
+    function updateWindmills() {
+      entities.forEach(ent => {
+        if (ent.type === 'windmill') {
+          const rx = Math.round(ent.x);
+          const ry = Math.round(ent.y);
+
+          // Find nearby spice field within 2 tiles
+          const spiceIdx = spiceFields.findIndex(s => Math.hypot(s.x - rx, s.y - ry) <= 2.2);
+          if (spiceIdx !== -1 && ent.storedSpice < 200) {
+            ent.storedSpice += 0.3;
+            spiceFields[spiceIdx].amount -= 0.3;
+            if (spiceFields[spiceIdx].amount <= 0) {
+              spiceFields.splice(spiceIdx, 1);
+            }
+          }
+        }
+      });
     }
 
     function updateUnits() {
@@ -947,11 +1094,20 @@
           unit.y = unit.targetY;
         }
 
-        // Harvester Mining
+        // Harvester Mining & Windmill Pickup Logic
         if (unit.type === 'harvester') {
           const rx = Math.round(unit.x);
           const ry = Math.round(unit.y);
 
+          // 1. Pick up from Windmill
+          const nearbyWindmill = entities.find(e => e.player === unit.player && e.type === 'windmill' && Math.hypot(e.x - rx, e.y - ry) < 1.5 && e.storedSpice > 10);
+          if (nearbyWindmill && unit.carryingSpice < 120) {
+            const amountToTake = Math.min(nearbyWindmill.storedSpice, 120 - unit.carryingSpice);
+            unit.carryingSpice += amountToTake;
+            nearbyWindmill.storedSpice -= amountToTake;
+          }
+
+          // 2. Direct Mining on Spice Field
           const spiceIdx = spiceFields.findIndex(s => s.x === rx && s.y === ry);
           if (spiceIdx !== -1 && unit.carryingSpice < 120) {
             unit.carryingSpice += 0.6;
@@ -961,21 +1117,21 @@
             }
           }
 
-          const pBase = entities.find(e => e.player === unit.player && e.type === 'base');
-          if (pBase) {
-            const baseDist = Math.hypot(pBase.x - unit.x, pBase.y - unit.y);
-            if (baseDist < 2.2 && unit.carryingSpice > 0) {
+          // 3. Deposit at Base or Silo
+          const pDepots = entities.filter(e => e.player === unit.player && (e.type === 'base' || e.type === 'silo'));
+          pDepots.forEach(depot => {
+            if (Math.hypot(depot.x - unit.x, depot.y - unit.y) < 2.2 && unit.carryingSpice > 0) {
               if (unit.player === 1) p1Spice += Math.floor(unit.carryingSpice);
               else p2Spice += Math.floor(unit.carryingSpice);
 
               unit.carryingSpice = 0;
               updateHUD();
             }
-          }
+          });
         }
 
-        // Combat Engine
-        if (unit.attack > 0) {
+        // Combat Engine (Skipped during Warm-up Truce)
+        if (unit.attack > 0 && warmupSecondsLeft <= 0) {
           entities.forEach(target => {
             if (target.player !== unit.player && target.hp > 0) {
               const targetDist = Math.hypot(target.x - unit.x, target.y - unit.y);
@@ -1027,8 +1183,9 @@
 
     // --- SHAI-HULUD (SANDWORM) LOGIC ---
     function updateSandworm() {
+      if (warmupSecondsLeft > 0) return; // Paused during 10s truce
+
       wormState.timer--;
-      
       const warningEl = document.getElementById('wormWarning');
 
       if (wormState.timer <= 70 && wormState.timer > 0 && !wormState.active) {
@@ -1040,7 +1197,7 @@
       if (wormState.timer <= 0 && !wormState.active) {
         const sandUnits = entities.filter(e => {
           const isRock = rockTiles.some(r => r.x === Math.round(e.x) && r.y === Math.round(e.y));
-          const isImmune = FACTIONS[e.faction]?.wormImmune || e.isFlying;
+          const isImmune = FACTIONS[e.faction]?.wormImmune || e.isFlying || e.isBuilding;
           return !isRock && !isImmune && e.type !== 'base';
         });
 
@@ -1063,7 +1220,7 @@
         if (wormState.progress >= 0.48 && wormState.progress <= 0.58) {
           entities = entities.filter(e => {
             const dist = Math.hypot(e.x - wormState.x, e.y - wormState.y);
-            if (dist < 2.6 && e.type !== 'base' && !FACTIONS[e.faction]?.wormImmune && !e.isFlying) {
+            if (dist < 2.6 && e.type !== 'base' && !FACTIONS[e.faction]?.wormImmune && !e.isFlying && !e.isBuilding) {
               return false;
             }
             return true;
@@ -1078,7 +1235,6 @@
     }
 
     function updateParticles() {
-      // Dust storm drift
       spiceDustParticles.forEach(p => {
         p.x += p.speedX;
         p.y += p.speedY;
@@ -1130,7 +1286,7 @@
       const selectBox = document.getElementById('selectionInfo');
       if (selectedEntity) {
         selectBox.classList.remove('hidden');
-        document.getElementById('selectName').textContent = selectedEntity.name;
+        document.getElementById('selectName').textContent = selectedEntity.name + (selectedEntity.storedSpice !== undefined ? ` (${Math.floor(selectedEntity.storedSpice)} Spice)` : '');
         const hpPercent = Math.max(0, (selectedEntity.hp / selectedEntity.maxHp) * 100);
         document.getElementById('selectHealthFill').style.width = `${hpPercent}%`;
       } else {
@@ -1252,6 +1408,35 @@
           ctx.arc(0, 0, tileSize * 0.3, 0, Math.PI * 2);
           ctx.fill();
 
+        } else if (ent.type === 'windmill') {
+          // Spice Windmill Frame
+          ctx.fillRect(-tileSize * 0.35, -tileSize * 0.35, tileSize * 0.7, tileSize * 0.7);
+          ctx.strokeRect(-tileSize * 0.35, -tileSize * 0.35, tileSize * 0.7, tileSize * 0.7);
+          
+          // Spinning Windmill Blades
+          const rot = animTicks * 0.08;
+          ctx.strokeStyle = '#22d3ee';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(Math.cos(rot) * tileSize * 0.45, Math.sin(rot) * tileSize * 0.45);
+          ctx.lineTo(-Math.cos(rot) * tileSize * 0.45, -Math.sin(rot) * tileSize * 0.45);
+          ctx.moveTo(Math.cos(rot + Math.PI/2) * tileSize * 0.45, Math.sin(rot + Math.PI/2) * tileSize * 0.45);
+          ctx.lineTo(-Math.cos(rot + Math.PI/2) * tileSize * 0.45, -Math.sin(rot + Math.PI/2) * tileSize * 0.45);
+          ctx.stroke();
+
+          // Central Hub
+          ctx.fillStyle = '#ea8a26';
+          ctx.beginPath();
+          ctx.arc(0, 0, tileSize * 0.15, 0, Math.PI * 2);
+          ctx.fill();
+
+        } else if (ent.type === 'silo') {
+          // Spice Silo Storage Tank
+          ctx.fillRect(-tileSize * 0.3, -tileSize * 0.35, tileSize * 0.6, tileSize * 0.7);
+          ctx.strokeRect(-tileSize * 0.3, -tileSize * 0.35, tileSize * 0.6, tileSize * 0.7);
+          ctx.fillStyle = '#ea8a26';
+          ctx.fillRect(-tileSize * 0.2, -tileSize * 0.1, tileSize * 0.4, tileSize * 0.35);
+
         } else if (ent.type === 'harvester') {
           // Heavy Hex Rig Body
           ctx.rotate(ent.angle || 0);
@@ -1305,12 +1490,10 @@
         } else if (ent.type === 'ornithopter') {
           // Dragonfly Flapping Wing Aircraft
           ctx.rotate(ent.angle || 0);
-          // Fuselage
           ctx.beginPath();
           ctx.ellipse(0, 0, tileSize * 0.4, tileSize * 0.15, 0, 0, Math.PI * 2);
           ctx.fill();
           ctx.stroke();
-          // Animated Flapping Wings
           const flap = Math.sin(animTicks * 0.4) * (tileSize * 0.35);
           ctx.strokeStyle = '#f7b731';
           ctx.beginPath();
@@ -1365,13 +1548,11 @@
         const cy = (wormState.y + 0.5) * tileSize;
         const radius = Math.sin(wormState.progress * Math.PI) * (tileSize * 2.8);
 
-        // Worm Pit Maw
         ctx.fillStyle = '#070402';
         ctx.beginPath();
         ctx.arc(cx, cy, radius, 0, Math.PI * 2);
         ctx.fill();
 
-        // Ringed Sandworm Maw Edge & Teeth
         ctx.strokeStyle = '#e03e11';
         ctx.lineWidth = 4;
         ctx.stroke();
